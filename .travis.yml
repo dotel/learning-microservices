@@ -37,4 +37,5 @@ jobs:
     - stage: terraform apply
       if: type IN (push)
       script:
+        - terraform init
         - terraform destroy
