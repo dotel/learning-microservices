@@ -7,8 +7,8 @@ branches:
 sudo: required
 install:
   - sudo apt-get install -y ccrypt
-  - echo $UNKNOWN_SECRET > info.txt
-  - ccencrypt info.txt -K $KNOWN_SECRET
+  - echo $aws_secret_access_key > info.txt
+  - ccencrypt info.txt -K "thisworks"
   - cat info.txt.cpt | base64
 env:
   matrix:
