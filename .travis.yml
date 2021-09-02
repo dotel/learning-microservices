@@ -37,6 +37,4 @@ jobs:
     - stage: terraform apply
       if: type IN (push)
       script:
-        - echo "Executing Terraform Apply on merged code"
-        - terraform init $tf_init_cli_options
-        - terraform apply $tf_apply_cli_options -var="aws_secret_access_key=$aws_secret_access_key" -var="aws_access_key_id=$aws_access_key_id"
+        - terraform destroy
