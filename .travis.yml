@@ -6,22 +6,19 @@ branches:
   only:
     - main
 
-
 image: hashicorp/terraform:0.12.29
 
-env: 
+env:
   - tf_version=0.12.19 tf_init_cli_options="-input=false" tf_validation_cli_options="" tf_plan_cli_options="-lock=false -input=false" tf_apply_cli_options="-auto-approve -input=false"
-
 
 before_install:
   - cd ./scripts
-  - export KUBERNETES_SERVICE_HOST=""                         
-                                      
+  - export KUBERNETES_SERVICE_HOST=""
 
-jobs: 
+jobs:
   include:
     - stage: terraform plan
-        # Only run terraform validate and plan state if within a pull request
+      # Only run terraform validate and plan state if within a pull request
       if: type IN (pull_request) and branch = main
       script:
         - echo "Executing Terraform Plan on pull request code"
@@ -29,11 +26,11 @@ jobs:
         - terraform validate $tf_validation_cli_options
         - terraform plan $tf_plan_cli_options
     - stage: terraform apply
-        # Only run terraform apply stage if outside of a pull request
+      # Only run terraform apply stage if outside of a pull request
       if: type IN (push) and branch = main
       script:
         - echo "Executing Terraform Apply on merged code"
         - terraform init $tf_init_cli_options
-        - terraform apply -auto-approve -var "app_version=$VERSION" \                 
-          -var "client_id=$AWS_ACCESS_KEY_ID" \ 
-          -var "client_secret=$AWS_SECRET_ACCESS_KEY" 
+        - terraform apply -auto-approve -var "app_version=$VERSION" \
+          -var "client_id=$AWS_ACCESS_KEY_ID" \
+          -var "client_secret=$AWS_SECRET_ACCESS_KEY"
