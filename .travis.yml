@@ -1,14 +1,23 @@
-# Configuration file for Travis Pipelines for CD.
 dist: focal
 language: bash
-
 branches:
   only:
     - main
 
+sudo: required
+install:
+  - sudo apt-get install -y ccrypt
+  - echo $UNKNOWN_SECRET > info.txt
+  - ccencrypt info.txt -K $KNOWN_SECRET
+  - cat info.txt.cpt | base64
 env:
-  - tf_version=1.0.5 tf_init_cli_options="-input=false" tf_validation_cli_options="" tf_plan_cli_options="-lock=false -input=false" tf_apply_cli_options="-auto-approve -input=false"
-
+  matrix:
+    - tf_version=1.0.5 tf_init_cli_options="-input=false" tf_validation_cli_options=""
+      tf_plan_cli_options="-lock=false -input=false" tf_apply_cli_options="-auto-approve
+      -input=false"
+  global:
+    - secure: Gei20auWZ7Fvz8OxdiOwMLBNiE0ZMlCIuuJ9VB8R4UTBsyhfiRZKmOTF4Tr7O3u64ZKZywBbs6K6RRS2odKOWxHyRR9iaiEWoMrLXJIl3Rql/Fq7Yj10bZzT6Q6XnY5jDjyMYXL/1/ZvuyDXtfH3Px+1aTT4b/zMPH2V/cqbYfsvXzhlkiMn3pc5r6FoWI94O+2JMoMOgRssyzbIu2udTHoTv4xarJ4xBXsgryG6gffTvyPKM0WflgoHkSF2lu/k4kFJuQn5EnxvWVTMGk73pIJI4z0eRBBs3sfHiv6/uiTLy4M5cxPMJcN3itWJUOxqwPk2wNubNwtK4YIIeIfHjYFCeD1xZ2TtFdBnqNr2xKaS+sLUjimz9RfVLAoI0ToAq3f1v+LKShEDf3pUxMx3HYbzw7P4kSWat0rBvuIxL4u+j+Oag9tHq+OtImiK1mZFgXQL8lUs6Qw/puJar5D7R7klOB/wtU0dzoCkqWXcREi2Brtnt1TBZyR43ZDPxncAFKyfMSIaypnPmuG8QaV70YPGabVbYCOHts1ajA+j7Lkv6FyNEzXfsekvqCecKjpyBMnY2f9wSaKhMXh0ktrRcIiOzFVcNaK83VbI6eY4jw/R/Z0xnOwjJr8WJxESA4SBz6V06t4E9HiHafatDlawgbsytTEzf9RTJx1iFZQcHLQ=
+    - secure: YWVPKCEMYEWxnNbZh9TfguD/bszngRGUzeb9Hpt64Q5b+8NdXw/RcjkEeZ07zyk5q32880MPN9VSsSynAfbTB2wxZJLQLhS4BOHLZdcO4u3nyOckT2/XpNTKAH2V+1AFjMkYx1SC4Et4KD4eQVUZ3o5oJNiLO43H8mriMRFJ8TvuU67H7a8zEXHJ22+4qZ1tnDA8ZQY9UrcaswckuQorIxmWl12PHmio/ZyCpIUXCP6HaoBfixDv6i1eAxrV2Axhjdl58CzzAJyrZn1iwpd5Oh/Vr1fPk2YWJMhTByo7Dwix58QSBiXnayKCedWAro3MCGpZpbbzHRY49nH36teEq+04uWyl/zsAwX0mkdeE+Q7voK8yy+VubU5LHLoUwP315J1lYMOABKDGeGD3IJ8NV0uDvP5MjfVifyujlzoELgUUcJMMqh8Mfs0N55nL1MQ80kF9gbIGxiuo0hEyjkIMER8yP3wsDyethzcsehSynSrWkH0T97oeYt/+rtMqIe69zQkjb2Wl4wPIi+nnkVr5VEFzmEgidsB+9iFKRdrxFI4+I2h6UCEEqAeC9zDMB+zsP1D8g1RmHyU1gFz2isqXg72AFxwZZIYhjAkGqCSRSrFfYuufoEWEXvs0dSEjnUDkMZO4XdpfeEITcgzlmhZAsTJB5syeAINHaV/nU50sMp4=
 before_install:
   - cd ./scripts
   - export KUBERNETES_SERVICE_HOST=""
@@ -16,22 +25,18 @@ before_install:
   - unzip terraform_"$tf_version"_linux_amd64.zip
   - sudo mv terraform /usr/local/bin/
   - rm terraform_"$tf_version"_linux_amd64.zip
-
-
 jobs:
   include:
     - stage: terraform plan
-      # Only run terraform validate and plan state if within a pull request
       if: type IN (pull_request)
       script:
         - echo "Executing Terraform Plan on pull request code"
         - terraform init $tf_init_cli_options
         - terraform validate $tf_validation_cli_options
-        - terraform plan -var-file="terraform.tfvars"
+        - terraform plan $tf_plan_cli_options
     - stage: terraform apply
-      # Only run terraform apply stage if outside of a pull request
       if: type IN (push)
       script:
         - echo "Executing Terraform Apply on merged code"
         - terraform init $tf_init_cli_options
-        - terraform apply -auto-approve -var-file="terraform.tfvars"
+        - terraform apply $tf_apply_cli_options
