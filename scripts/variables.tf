@@ -14,7 +14,7 @@ variable admin_username {
 variable app_version { 
 }
 
-variable secret_key {
+variable aws_secret_access_key {
     type = string 
     description = "Your aws secret key"
 } 

@@ -4,7 +4,7 @@
 provider "aws" {
   region = var.location
   access_key = var.aws_access_key
-  secret_key = var.secret_key
+  secret_key = var.aws_secret_access_key
 }
 
 provider "tls" {
