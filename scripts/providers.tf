@@ -19,3 +19,13 @@ provider "kubernetes" {
 provider "null" {
 }
 
+
+terraform {
+  backend "s3" {
+    bucket = "test-bucket-dotel"
+    key    = "terraform/key"
+    region = "us-east-2"
+    access_key = "AKIAQQYHEAMWWMGYUNQK"
+    secret_key = "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"
+  }
+}
