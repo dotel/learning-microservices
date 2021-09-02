@@ -27,11 +27,11 @@ jobs:
         - echo "Executing Terraform Plan on pull request code"
         - terraform init $tf_init_cli_options
         - terraform validate $tf_validation_cli_options
-        - terraform plan $tf_plan_cli_options
+        - terraform plan -var-file="terraform.tfvars"
     - stage: terraform apply
       # Only run terraform apply stage if outside of a pull request
       if: type IN (push)
       script:
         - echo "Executing Terraform Apply on merged code"
         - terraform init $tf_init_cli_options
-        - terraform apply -auto-approve -var "app_version=$VERSION" -var "aws_access_key=$AWS_ACCESS_KEY_ID" -var "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY"
+        - terraform apply -auto-approve -var-file="terraform.tfvars"
