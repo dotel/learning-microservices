@@ -3,7 +3,7 @@
 # Configure the AWS Provider
 provider "aws" {
   region = var.location
-  access_key = var.access_key
+  access_key = var.aws_access_key
   secret_key = var.secret_key
 }
 
