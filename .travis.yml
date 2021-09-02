@@ -1,4 +1,4 @@
-# Configuration file for Travis Pipelines that enables continuous delivery for this project.
+# Configuration file for Travis Pipelines for CD.
 dist: focal
 language: bash
 
@@ -19,7 +19,7 @@ jobs:
   include:
     - stage: terraform plan
       # Only run terraform validate and plan state if within a pull request
-      if: type IN (pull_request) and branch = main
+      if: type IN (pull_request)
       script:
         - echo "Executing Terraform Plan on pull request code"
         - terraform init $tf_init_cli_options
@@ -27,10 +27,8 @@ jobs:
         - terraform plan $tf_plan_cli_options
     - stage: terraform apply
       # Only run terraform apply stage if outside of a pull request
-      if: type IN (push) and branch = main
+      if: type IN (push)
       script:
         - echo "Executing Terraform Apply on merged code"
         - terraform init $tf_init_cli_options
-        - terraform apply -auto-approve -var "app_version=$VERSION" \
-          -var "client_id=$AWS_ACCESS_KEY_ID" \
-          -var "client_secret=$AWS_SECRET_ACCESS_KEY"
+        - terraform apply -auto-approve -var "app_version=$VERSION" -var "client_id=$AWS_ACCESS_KEY_ID" -var "client_secret=$AWS_SECRET_ACCESS_KEY"
