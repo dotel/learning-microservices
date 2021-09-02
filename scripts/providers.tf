@@ -20,9 +20,6 @@ provider "null" {
 }
 
 
-
-
-
 terraform {
   backend "s3" {
     bucket = "test-bucket-dotel"
