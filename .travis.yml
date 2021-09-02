@@ -33,4 +33,4 @@ jobs:
     - echo "Executing Terraform Apply on merged code"
     - terraform init $tf_init_cli_options
     - terraform apply $tf_apply_cli_options -var="AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
-      -var="AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+      -var="AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" --var="app_version=1.0.0"
